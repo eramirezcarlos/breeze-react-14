@@ -9,11 +9,19 @@ const LoginLinks = () => {
     return (
         <div className="hidden fixed top-0 right-0 px-6 py-4 sm:block">
             {user ? (
-                <Link
-                    href="/dashboard"
-                    className="ml-4 text-sm text-gray-700 underline">
-                    Dashboard
-                </Link>
+                <>
+                    <Link
+                        href="/dashboard"
+                        className="ml-4 text-sm text-gray-700 underline">
+                        Dashboard
+                    </Link>
+                    &nbsp;
+                    {/* <Link
+                        href="/panel"
+                        className="text-sm text-gray-700 underline">
+                        Panel
+                    </Link> */}
+                </>
             ) : (
                 <>
                     <Link
@@ -26,6 +34,12 @@ const LoginLinks = () => {
                         href="/register"
                         className="ml-4 text-sm text-gray-700 underline">
                         Register
+                    </Link>
+
+                    <Link
+                        href="/panel"
+                        className="ml-4 text-sm text-gray-700 underline">
+                        Panel
                     </Link>
                 </>
             )}
