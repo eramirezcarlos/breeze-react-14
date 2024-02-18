@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+
 import { useAuth } from '@/hooks/auth'
 
 const LoginLinks = () => {
@@ -11,16 +12,12 @@ const LoginLinks = () => {
             {user ? (
                 <>
                     <Link
-                        href="/dashboard"
-                        className="ml-4 text-sm text-gray-700 underline">
-                        Dashboard
-                    </Link>
-                    &nbsp;
-                    {/* <Link
                         href="/panel"
-                        className="text-sm text-gray-700 underline">
-                        Panel
-                    </Link> */}
+                        className="ml-4 text-sm text-gray-700 underline">
+                        Panel Admon
+                    </Link>
+
+                    {/* <DropdownUser /> */}
                 </>
             ) : (
                 <>
@@ -39,7 +36,7 @@ const LoginLinks = () => {
                     <Link
                         href="/panel"
                         className="ml-4 text-sm text-gray-700 underline">
-                        Panel
+                        Panel Admon
                     </Link>
                 </>
             )}
