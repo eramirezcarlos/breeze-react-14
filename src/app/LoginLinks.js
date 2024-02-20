@@ -16,8 +16,6 @@ const LoginLinks = () => {
                         className="ml-4 text-sm text-gray-700 underline">
                         Panel Admon
                     </Link>
-
-                    {/* <DropdownUser /> */}
                 </>
             ) : (
                 <>
@@ -33,11 +31,6 @@ const LoginLinks = () => {
                         Register
                     </Link>
 
-                    <Link
-                        href="/panel"
-                        className="ml-4 text-sm text-gray-700 underline">
-                        Panel Admon
-                    </Link>
                 </>
             )}
         </div>

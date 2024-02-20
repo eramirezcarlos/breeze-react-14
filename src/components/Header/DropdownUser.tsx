@@ -1,8 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from '@/hooks/auth';
 
-const DropdownUser = () => {
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  email_verified_at: string | null;
+  username: string | null;
+  role_id: number;
+  image: string;
+  status: string;
+  about: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Props {
+  user: User;
+}
+
+const DropdownUser = ( props: { loggedUser: User } ) => {
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
@@ -34,6 +54,8 @@ const DropdownUser = () => {
     return () => document.removeEventListener("keydown", keyHandler);
   });
 
+  const { logout } = useAuth();
+
   return (
     <div className="relative">
       <Link
@@ -44,7 +66,7 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+           {props.loggedUser?.name}           
           </span>
           <span className="block text-xs">UX Designer</span>
         </span>
@@ -157,7 +179,9 @@ const DropdownUser = () => {
             </Link>
           </li>
         </ul>
-        <button className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+        <button className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
+          onClick={logout}
+        >
           <svg
             className="fill-current"
             width="22"
