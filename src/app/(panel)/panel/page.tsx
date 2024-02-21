@@ -3,9 +3,8 @@ import ECommerce from "@/components/Dashboard/E-commerce";
 import { Metadata } from "next";
 
 export const metadata = {
-    // title: 'Laravel - Dashboard',
-    title: "TailAdmin | Next.js E-commerce Dashboard Template",
-    description: "This is Home Blog page for TailAdmin Next.js",  
+    title: "Real Estate Dashboard",
+    description: "Administration and Maintenance modulefor the Website",  
 }
 
 const Dashboard = () => {
