@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const UsersLayout = () => {
     return (
         <>
-            <Breadcrumb pageName="Users' Panel" />
+            <Breadcrumb pageName="Users" />
 
             <div className="flex flex-col gap-10">
                 <UsersList />
