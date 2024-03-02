@@ -1,20 +1,44 @@
+'use client'
+import React, { useEffect, useState } from 'react';
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
+import UsersList from "@/components/Tables/UsersList"
 import { Metadata } from 'next'
-import UsersList from "@/components/Tables/UsersList";
-export const metadata: Metadata = {
-    title: 'Users Form Page - Dashboard Admin',
-    description: 'Maintenance users ',
-    // other metadata
-}
+
+import apiService from '@/services/apiServices';
+// import User from '@/types/User';
+import { UserData } from '@/types/UserData';
+
+// export const metadata: Metadata = {
+//     title: 'Users Form Page - Dashboard Admin',
+//     description: 'Maintenance users ',
+//     // other metadata
+// }
 
 const UsersLayout = () => {
+
+    const [userData, setUsers] = useState<UserData[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await apiService.fetchData<UserData[]>('/users');
+                setUsers(data);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
+ ;
     return (
         <>
             <Breadcrumb pageName="Users" />
 
             <div className="flex flex-col gap-10">
-                <UsersList />
-                
+                <UsersList  userData={userData} />
             </div>
 
 

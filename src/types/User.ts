@@ -1,3 +1,4 @@
+// Type User
 interface User {
     id: number
     name: string
@@ -11,3 +12,5 @@ interface User {
     created_at: string
     updated_at: string
 }
+
+export default User;
