@@ -1,17 +1,36 @@
+'use client'
 import Image from 'next/image'
 import { UserData } from '@/types/UserData'
+import React, { useEffect, useState, StrictMode } from 'react'
+import apiService from '@/services/apiServices'
 
 interface ListUsersProps {
     userData: UserData;
 }
 
 // const UsersList = (ListUsersDataProps : UserData ) => {
-const UsersList: React.FC<ListUsersProps> = ({ userData }) => {
- 
-    console.log( userData.data );
+const UsersList: React.FC<ListUsersProps> = () => {
+
+    const [userData, setUsers] = useState<UserData[]>([])
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await apiService.fetchData<UserData[]>('/users')
+                setUsers(data)
+            } catch (error) {
+                console.error('Error fetching users:', error)
+            }
+        }
+
+        fetchData()
+    }, [])
+
+   
     return (
         <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="max-w-full overflow-x-auto">
+
                 <table className="w-full table-auto">
                     <thead>
                         <tr className="bg-gray-2 text-left dark:bg-meta-4">
@@ -29,9 +48,10 @@ const UsersList: React.FC<ListUsersProps> = ({ userData }) => {
                             </th>
                         </tr>
                     </thead>
-                    {/*
+                    
                     <tbody>
-                        {usersData.map((users, key) => (
+                    {/*
+                        {userData.data.map((users, key) => (
                             <tr key={key}>
                                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
                                     <h5 className="font-medium text-black dark:text-white">
@@ -133,8 +153,9 @@ const UsersList: React.FC<ListUsersProps> = ({ userData }) => {
                             <td className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white"></td>
                             <td className="py-4 px-4 font-medium text-black dark:text-white"></td>
                         </tr>
+                    */}
                     </tbody>
-                */}
+                
                 </table>
             </div>
         </div>

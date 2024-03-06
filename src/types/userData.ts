@@ -1,4 +1,4 @@
-
+//type of users as eloquent with pagination
 import  User  from '@/types/User'
 interface UserData {
     current_page: number;

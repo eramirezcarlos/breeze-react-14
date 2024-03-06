@@ -1,17 +1,15 @@
 'use client'
 
+import { useAuth } from '@/hooks/auth'
+import { useState, useEffect } from 'react'
+
 import '@/app/globals.css'
 import '@/app/data-tables-css.css'
 import '@/app/satoshi.css'
 
-
-import { useAuth } from '@/hooks/auth'
-import { useState, useEffect } from 'react'
 import Loader from '@/components/common/Loader'
-
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
-
 import Loading from '@/app/(app)/Loading'
 
 export default function RootLayout({
@@ -20,6 +18,7 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
 
+    
     const { user } = useAuth({ middleware: 'auth' })
     
     const [sidebarOpen, setSidebarOpen] = useState(false)

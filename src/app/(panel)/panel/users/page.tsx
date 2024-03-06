@@ -1,46 +1,28 @@
-'use client'
-import React, { useEffect, useState } from 'react';
+// 'use client'
+
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
-import UsersList from "@/components/Tables/UsersList"
+import UsersList from '@/components/Tables/UsersList'
 import { Metadata } from 'next'
 
-import apiService from '@/services/apiServices';
-// import User from '@/types/User';
-import { UserData } from '@/types/UserData';
 
-// export const metadata: Metadata = {
-//     title: 'Users Form Page - Dashboard Admin',
-//     description: 'Maintenance users ',
-//     // other metadata
-// }
+// import User from '@/types/User';
+// import { UserData } from '@/types/UserData'
+
+export const metadata: Metadata = {
+    title: 'Users Form Page - Dashboard Admin',
+    description: 'Maintenance users ',
+}
+
 
 const UsersLayout = () => {
 
-    const [userData, setUsers] = useState<UserData[]>([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await apiService.fetchData<UserData[]>('/users');
-                setUsers(data);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-
- ;
     return (
         <>
             <Breadcrumb pageName="Users" />
 
             <div className="flex flex-col gap-10">
-                <UsersList  userData={userData} />
+                <UsersList  />
             </div>
-
 
             {/*Start layout for the modal */}
             <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
@@ -55,7 +37,6 @@ const UsersLayout = () => {
                         <form action="#">
                             <div className="p-6.5">
                                 <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
                                             First name
@@ -153,10 +134,7 @@ const UsersLayout = () => {
                     </div>
                 </div>
             </div>
-             {/*End layout for the modal */}
-
-
-
+            {/*End layout for the modal */}
         </>
     )
 }

@@ -1,4 +1,4 @@
-// Type User
+// Type User as eloquent model
 interface User {
     id: number
     name: string
@@ -12,5 +12,4 @@ interface User {
     created_at: string
     updated_at: string
 }
-
 export default User;
