@@ -1,4 +1,4 @@
-'use client'
+// 'use client'
 import Image from 'next/image'
 import { UserData } from '@/types/UserData'
 import React, { useEffect, useState, StrictMode } from 'react'
@@ -8,24 +8,10 @@ interface ListUsersProps {
     userData: UserData;
 }
 
-// const UsersList = (ListUsersDataProps : UserData ) => {
-const UsersList: React.FC<ListUsersProps> = () => {
+const UsersList = (ListUsersDataProps : UserData ) => {
+//const UsersList: React.FC<ListUsersProps> = () => {
 
-    const [userData, setUsers] = useState<UserData[]>([])
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await apiService.fetchData<UserData[]>('/users')
-                setUsers(data)
-            } catch (error) {
-                console.error('Error fetching users:', error)
-            }
-        }
-
-        fetchData()
-    }, [])
-
+    console.log("User Data ", ListUsersDataProps );
    
     return (
         <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -50,7 +36,7 @@ const UsersList: React.FC<ListUsersProps> = () => {
                     </thead>
                     
                     <tbody>
-                    {/*
+                        
                         {userData.data.map((users, key) => (
                             <tr key={key}>
                                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
@@ -153,7 +139,7 @@ const UsersList: React.FC<ListUsersProps> = () => {
                             <td className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white"></td>
                             <td className="py-4 px-4 font-medium text-black dark:text-white"></td>
                         </tr>
-                    */}
+                    
                     </tbody>
                 
                 </table>

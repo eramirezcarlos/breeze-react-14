@@ -16,6 +16,11 @@ const LoginLinks = () => {
                         className="ml-4 text-sm text-gray-700 underline">
                         Panel Admon
                     </Link>
+                    <Link
+                        href="/dashboard"
+                        className="ml-4 text-sm text-gray-700 underline">
+                        Dashboard
+                    </Link>
                 </>
             ) : (
                 <>
@@ -30,7 +35,6 @@ const LoginLinks = () => {
                         className="ml-4 text-sm text-gray-700 underline">
                         Register
                     </Link>
-
                 </>
             )}
         </div>

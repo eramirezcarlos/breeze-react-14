@@ -1,0 +1,509 @@
+<?php
+
+namespace App\Helpers;
+
+use PDO;
+
+class Sql
+{
+    /**
+     * Dynamic function for returning results from stored procedure or true/false for execution
+     * @param string $proc
+     * @param array|null $parameters
+     * @param bool $isExecute
+     * @param string $connection
+     * @return SPResult
+     */
+    public static function execProcedureRaw(string $proc, array $parameters = null, bool $isExecute = false, string $connection = 'sql_crss', bool $noCount = true): SPResult
+    {
+        $result = new SPResult();
+        $result->procedure_name = $proc;    
+        $result->parameters = $parameters;
+
+
+        $pdo = \DB::connection(name: $connection)->getPdo();
+        //Add no count for not getting the first result set with number of rows affected
+        if ($noCount) {
+            $stmt = $pdo->prepare('SET NOCOUNT ON ' . $proc);
+        } else {
+            $stmt = $pdo->prepare($proc);
+        }
+        
+        // Attempt to execute stored procedure and log results
+        try {
+            $exec = $stmt->execute();
+            $result->column_count = $stmt->columnCount();
+            $result->row_count = $stmt->rowCount();
+            $result->executed = $exec;
+            if (!$exec) {
+                $result->has_error = true;
+                $result->error_msg = 'execProcedureRaw: Procedure failed to execute.';
+                $result->error_info = $pdo->errorInfo();
+                return $result;
+            }
+            if ($isExecute) return $result;
+        } catch (\Exception $ex) {
+            \Log::error('Error during execProcedureRaw execute', [
+                'error_msg'         => $ex->getMessage(),
+                'stack_trace'       => $ex->getTrace(),
+                'procedure_name'    => $proc,
+                'parameters'        => $parameters,
+                'connection'        => $connection
+            ]);
+            $result->executed = false;
+            $result->has_error = true;
+            $result->error_msg = $ex->getMessage();
+            $result->error_info = $ex->getTrace();
+            return $result;
+        }
+
+        $response = [];
+
+        //First result from stored procedure will contain the number of rows affected, need to skip to avoid error
+        // $stmt->nextRowSet();
+        do {
+            try {
+                $response[] = $stmt->fetchAll(\PDO::FETCH_OBJ);
+            } catch (\Exception $ex) {
+                // print_r($stmt);
+                \Log::error('Error during execProcedureRaw fetchAll', [
+                    'error_msg'         => $ex->getMessage(),
+                    'stack_trace'       => $ex->getTrace(),
+                    'procedure_name' => $proc,
+                    'parameters'    => $parameters,
+                    'connection' => $connection
+                ]);
+                $result->has_error = true;
+                $result->error_msg = $ex->getMessage();
+                $result->error_info = $ex->getTrace();
+            }
+        } while ($stmt->nextRowset());
+        $result->data = $response;
+        return $result;
+    }
+
+    /**
+     * Dynamic function for returning results from stored procedure or true/false for execution
+     * @param string $procName
+     * @param array|null $parameters
+     * @param bool $isExecute
+     * @param string $connection
+     * @return SPResult
+     */
+    public static function callRaw(string $procName, array $parameters = null, bool $isExecute = false, string $connection = 'sql_crss'): SPResult
+    {
+        $result = new SPResult();
+        $result->procedure_name = $procName;
+        $result->parameters = $parameters;
+
+        // Build stored procedure statement dynamically based on number of parameters
+        $syntax = '';
+        if ($parameters != null) {
+            for ($i = 0; $i < count($parameters); $i++) {
+                $syntax .= (!empty($syntax) ? ',' : '') . '?';
+            }
+        }
+        $syntax = 'EXEC ' . $procName . ' ' . $syntax . ';';
+
+        // Bind parameters to procedure call
+        $pdo = \DB::connection(name: $connection)->getPdo();
+        if ($parameters != null) {
+            $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+            $stmt = $pdo->prepare($syntax, [\PDO::ATTR_CURSOR => \PDO::CURSOR_SCROLL]);
+            $counter = 0;
+            foreach ($parameters as $param) {
+                // bindValue (unlike bindParam) makes a reference so will only be evaluated when execute is called
+                $stmt->bindValue((1 + $counter), $param);
+                // $stmt->bindParam((1 + $counter), $parameters[$i]);
+                $counter++;
+            }
+        } else {
+            $stmt = $pdo->prepare($syntax);
+        }
+
+        // Attempt to execute stored procedure and log results
+        try {
+            $exec = $stmt->execute();
+            $result->executed = $exec;
+            if (!$exec) {
+                $result->has_error = true;
+                $result->error_msg = 'Procedure failed to execute.';
+                $result->error_info = $pdo->errorInfo();
+                return $result;
+            }
+            if ($isExecute) return $result;
+        } catch (\Exception $ex) {
+            \Log::error('Error during execute of stored procedure', [
+                'error_msg'         => $ex->getMessage(),
+                'stack_trace'       => $ex->getTrace(),
+                'procedure_name'    => $procName,
+                'parameters'        => $parameters,
+                'connection'        => $connection
+            ]);
+            $result->executed = false;
+            $result->has_error = true;
+            $result->error_msg = $ex->getMessage();
+            $result->error_info = $ex->getTrace();
+            return $result;
+        }
+
+        $response = [];
+        do {
+            try {
+                $response[] = $stmt->fetchAll(\PDO::FETCH_OBJ);
+            } catch (\Exception $ex) {
+                \Log::error('Error during fetchAll on stored procedure', [
+                    'error_msg'         => $ex->getMessage(),
+                    'stack_trace'       => $ex->getTrace(),
+                    'procedure_name' => $procName,
+                    'parameters'    => $parameters,
+                    'connection' => $connection
+                ]);
+                $result->has_error = true;
+                $result->error_msg = $ex->getMessage();
+                $result->error_info = $ex->getTrace();
+            }
+        } while ($stmt->nextRowset());
+        $result->data = $response;
+
+        return $result;
+    }
+
+    /**
+     * Dynamic function for returning results from functions
+     * @param string $funcName
+     * @param array|null $parameters
+     * @param bool $isExecute
+     * @param string $connection
+     * @return SPResult
+     */
+    public static function selectRaw(
+        string $funcName,
+        array $parameters = null,
+        bool $isExecute = false,
+        string $connection = 'portal',
+        string $orderBy = null,
+        string $order = 'desc'
+    ): SPResult {
+        $result = new SPResult();
+        $result->procedure_name = $funcName;
+        $result->parameters = $parameters;
+
+        // Build stored Function statement dynamically based on number of parameters
+        if ($parameters != null) {
+            $syntax = '';
+            for ($i = 0; $i < count($parameters); $i++) {
+                $syntax .= (!empty($syntax) ? ',' : '') . '?';
+            }
+            $syntax = 'select * from ' . $funcName . ' (' . $syntax . ')';
+        } else {
+            $syntax = 'select * from ' . $funcName;
+        }
+
+        // Add order by if present
+        if ($orderBy != null) {
+            $syntax .= ' order by ' . $orderBy . ' ' . $order . ';';
+        } else {
+            $syntax .= ';';
+        }
+
+        // Bind parameters to Function call
+        $pdo = \DB::connection(name: $connection)->getPdo();
+        if ($parameters != null) {
+            $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+            $stmt = $pdo->prepare($syntax, [\PDO::ATTR_CURSOR => \PDO::CURSOR_SCROLL]);
+            $counter = 0;
+            foreach ($parameters as $param) {
+                // bindValue (unlike bindParam) makes a reference so will only be evaluated when execute is called
+                $stmt->bindValue((1 + $counter), $param);
+                // $stmt->bindParam((1 + $counter), $parameters[$i]);
+                $counter++;
+            }
+        } else {
+            $stmt = $pdo->prepare($syntax);
+        }
+
+        // Attempt to execute stored Function and log results
+        try {
+            $exec = $stmt->execute();
+            $result->executed = $exec;
+            if (!$exec) {
+                $result->has_error = true;
+                $result->error_msg = 'Function failed to execute.';
+                $result->error_info = $pdo->errorInfo();
+                return $result;
+            }
+            if ($isExecute) return $result;
+        } catch (\Exception $ex) {
+            \Log::error('Error during execute of Function', [
+                'error_msg'         => $ex->getMessage(),
+                'stack_trace'       => $ex->getTrace(),
+                'function_name'    => $funcName,
+                'parameters'        => $parameters,
+                'connection'        => $connection
+            ]);
+            $result->executed = false;
+            $result->has_error = true;
+            $result->error_msg = $ex->getMessage();
+            $result->error_info = $ex->getTrace();
+            return $result;
+        }
+
+        try {
+            $result->data = $stmt->fetchAll(\PDO::FETCH_OBJ);
+        } catch (\Exception $ex) {
+            \Log::error('Error during fetchAll on stored Function', [
+                'error_msg'         => $ex->getMessage(),
+                'stack_trace'       => $ex->getTrace(),
+                'function_name' => $funcName,
+                'parameters'    => $parameters,
+                'connection' => $connection
+            ]);
+            $result->has_error = true;
+            $result->error_msg = $ex->getMessage();
+            $result->error_info = $ex->getTrace();
+        }
+        return $result;
+    }
+
+
+    public static function callMiscRaw(string $procName, array $parameters = null, bool $isExecute = false, string $connection = 'sql_crss'): SPResult
+    {
+        $result = new SPResult();
+        $result->procedure_name = $procName;
+        $result->parameters = $parameters;
+
+        // Build stored procedure statement dynamically based on number of parameters
+        $syntax = '';
+        $placeholderParams = [];
+        if ($parameters != null) {
+            foreach ($parameters as $ke => $v) {
+
+                $placeholderParams[] = "@" . $ke . '=?';
+            }
+        }
+
+        $syntax = 'EXEC ' . $procName . ' ' . implode(", ", $placeholderParams); // . ';';
+
+
+        // Bind parameters to procedure call
+        $pdo = \DB::connection(name: $connection)->getPdo();
+        if ($parameters != null) {
+            $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+            $stmt = $pdo->prepare($syntax, [\PDO::ATTR_CURSOR => \PDO::CURSOR_SCROLL]);
+            $counter = 0;
+            foreach ($parameters as $param) {
+                // bindValue (unlike bindParam) makes a reference so will only be evaluated when execute is called
+                $stmt->bindValue((1 + $counter), trim($param), self::_PDODataType(trim($param)));
+                // $stmt->bindParam((1 + $counter), $parameters[$i]);
+                $counter++;
+            }
+        } else {
+            $stmt = $pdo->prepare($syntax);
+        }
+
+        // Attempt to execute stored procedure and log results
+        try {
+            $exec = $stmt->execute();
+            $result->executed = $exec;
+            if (!$exec) {
+                $result->has_error = true;
+                $result->error_msg = 'Procedure failed to execute.';
+                $result->error_info = $pdo->errorInfo();
+                return $result;
+            }
+            if ($isExecute) return $result;
+        } catch (\Exception $ex) {
+            \Log::error('Error during execute of stored procedure', [
+                'error_msg'         => $ex->getMessage(),
+                'stack_trace'       => $ex->getTrace(),
+                'procedure_name'    => $procName,
+                'parameters'        => $parameters,
+                'connection'        => $connection
+            ]);
+            $result->executed = false;
+            $result->has_error = true;
+            $result->error_msg = $ex->getMessage();
+            $result->error_info = $ex->getTrace();
+            return $result;
+        }
+
+        $response = [];
+        do {
+            try {
+                $response[] = $stmt->fetchAll(PDO::FETCH_OBJ);
+            } catch (\Exception $ex) {
+                \Log::error('Error during fetchAll on stored procedure', [
+                    'error_msg'         => $ex->getMessage(),
+                    'stack_trace'       => $ex->getTrace(),
+                    'procedure_name' => $procName,
+                    'parameters'    => $parameters,
+                    'connection' => $connection
+                ]);
+                $result->has_error = true;
+                $result->error_msg = $ex->getMessage();
+                $result->error_info = $ex->getTrace();
+            }
+        } while ($stmt->nextRowset());
+        $result->data = $response;
+
+        return $result;
+    }
+    
+    /**
+     * Executes a stored procedure with raw output handling.
+     *
+     * @param string $procName The name of the stored procedure to be executed.
+     * @param array|null $parameters (Optional) The parameters to be passed to the stored procedure. Defaults to null.
+     * @param bool $isExecute (Optional) Determines whether to execute the stored procedure immediately. Defaults to false.
+     * @param string $connection (Optional) The name of the database connection. Defaults to 'sql_crss'.
+     * @param array|null $output_parameters (Optional) Reference variable to store output parameters from the stored procedure. Defaults to null.
+     *
+     * @return SPResult The result of the stored procedure execution.
+     */
+    public static function callMiscRawOutput(string $procName, array $parameters = null, bool $isExecute = false, string $connection = 'sql_crss', array $output_parameters = null): SPResult
+    {
+        //This method binds Params
+        $result = new SPResult();
+        $result->procedure_name = $procName;
+        $result->parameters = $parameters;
+
+        // Build stored procedure statement dynamically based on number of parameters
+        $syntax = '';
+        $placeholderParams = [];
+
+        if ($parameters != null) {
+            foreach ($parameters as $ke => $v) {
+                $placeholderParams[] = "@" . $ke . '=:' . $ke;
+            }
+        }
+
+        $syntax = 'EXEC ' . $procName . ' ' . implode(", ", $placeholderParams);
+
+        // Bind parameters to procedure call
+        $pdo = \DB::connection(name: $connection)->getPdo();
+
+
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo->exec("SET ANSI_WARNINGS OFF");
+
+        if ($parameters != null ||  $output_parameters != null) {
+            $pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+            $stmt = $pdo->prepare($syntax, [\PDO::ATTR_CURSOR => \PDO::CURSOR_SCROLL]);
+
+            foreach ($parameters as $ind => $param) {
+
+                ${$ind} = trim($param);                
+                $paramName = ":$ind";
+
+
+                if ($output_parameters != null  && isset($output_parameters[$ind])) {
+
+                    $param = ($output_parameters[$ind]);
+                    $paramValue = $param['type'];
+                    $length = $param['length'];
+                    ${$ind} = null;
+                    
+                    $stmt->bindParam($paramName, ${$ind},  self::_PDODataType($paramValue) | PDO::PARAM_INPUT_OUTPUT, $length);
+                } else {
+                    
+                    $object = self::_PDODataType(${$ind});                    
+                    if( (bool) @simplexml_load_string(${$ind}) ){
+                        $object = PDO::PARAM_LOB;
+                    }                    
+                    $stmt->bindParam($paramName, ${$ind}, $object );
+                }
+            }
+        } else {
+            $stmt = $pdo->prepare($syntax);
+        }
+
+        // Attempt to execute stored procedure and log results
+        try {
+            $exec = $stmt->execute();
+            $result->executed = $exec;
+            if (!$exec) {
+                $result->has_error = true;
+                $result->error_msg = 'Procedure failed to execute.';
+                $result->error_info = $pdo->errorInfo();
+                return $result;
+            }
+            if ($isExecute) return $result;
+        } catch (\Exception $ex) {
+            \Log::error('Error during execute of stored procedure', [
+                'error_msg'         => $ex->getMessage(),
+                'stack_trace'       => $ex->getTrace(),
+                'procedure_name'    => $procName,
+                'parameters'        => $parameters,
+                'connection'        => $connection
+            ]);
+            $result->executed = false;
+            $result->has_error = true;
+            $result->error_msg = $ex->getMessage();
+            $result->error_info = $ex->getTrace();
+            return $result;
+        }
+
+        $response = [];
+        $data = [];
+
+        $values = ($output_parameters != null)?array_keys($output_parameters):[];
+        
+        if ($output_parameters != null && count($output_parameters) > 1) {
+            foreach ($values as $value) {
+                $data[$value] = trim(${$value});
+            }
+            $result->data = $data;
+        } else {
+            $count = 0;
+            do {
+                try {
+                    if ($output_parameters != null) {
+                        $response[] = [$values[$count] => trim($stmt->fetchAll(PDO::FETCH_OBJ)[0]->{''})];
+                    } else {
+                        $response[] = $stmt->fetchAll(PDO::FETCH_OBJ);
+                    }
+                    $count++;
+                } catch (\Exception $ex) {
+                    \Log::error('Error during fetchAll on stored procedure', [
+                        'error_msg'         => $ex->getMessage(),
+                        'stack_trace'       => $ex->getTrace(),
+                        'procedure_name' => $procName,
+                        'parameters'    => $parameters,
+                        'connection' => $connection
+                    ]);
+                    $result->has_error = true;
+                    $result->error_msg = $ex->getMessage();
+                    $result->error_info = $ex->getTrace();
+                }
+            } while ($stmt->nextRowset());
+            $result->data = $response;
+        }
+        return $result;
+    }
+
+    private static function _PDODataType($value)
+    {
+        if (is_null($value)) {           
+            return \PDO::PARAM_NULL;
+        }
+
+        if (is_bool($value)) {            
+            return \PDO::PARAM_BOOL;
+        }
+
+        if (is_int($value)) {            
+            return \PDO::PARAM_INT;
+        }
+
+        if (is_object($value)) {           
+            return \PDO::PARAM_LOB;
+        }
+
+        if( is_float($value) ){
+            return \PDO::PARAM_STR;
+        }
+
+        return \PDO::PARAM_STR;
+    }
+}
