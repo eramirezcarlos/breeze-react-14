@@ -1,0 +1,233 @@
+<?php
+
+
+
+namespace App\Helpers;
+
+
+
+/**
+
+ * Class to standardize stored procedure and functions returned data.
+
+ */
+
+class SPResult
+
+{
+
+    /**
+
+     * Did the stored procedure execute properly
+
+     * @var bool
+
+     */
+
+    public $executed = false;
+
+
+
+    /**
+
+     * Did the stored procedure generate errors
+
+     * @var bool
+
+     */
+
+    public $has_error = false;
+
+
+
+    /**
+
+     * Error message if any
+
+     * @var string|null
+
+     */
+
+    public $error_msg;
+
+
+
+    /**
+
+     * PDO error information
+
+     * @var array
+
+     */
+
+    public $error_info = [];
+
+
+
+    /**
+
+     * Procedure being called
+
+     * @var string
+
+     */
+
+    public $procedure_name;
+
+
+
+    /**
+
+     * Parameters passed to stored procedure
+
+     * @var array
+
+     */
+
+    public $parameters = [];
+
+
+
+    /**
+
+     * Datasets received from stored procedure
+
+     * @var array
+
+     */
+
+    public $data = [];
+
+
+
+    /**
+
+     * Number of rows changed by query
+
+     * @var int
+
+     */
+
+    public $row_count;
+
+
+
+    /**
+
+     * Number of row returned in result
+
+     * @var int
+
+     */
+
+    public $column_count;
+
+
+
+    /**
+
+     * @return string
+
+     */
+
+    public function getExecuteString()
+
+    {
+
+        return $this->executed ? 'Stored Procedure executed successfully' : 'Stored Procedure failed to execute';
+
+    }
+
+
+
+    /**
+
+     * @return array
+
+     */
+
+    public function getCombinedErrorArray()
+
+    {
+
+        return [
+
+            'message'   => $this->error_msg,
+
+            'info'      => $this->error_info
+
+        ];
+
+    }
+
+
+
+    /**
+
+     * @return array
+
+     */
+
+    public function getCombinedRequestParams()
+
+    {
+
+        return [
+
+            'stored_procedure'  => $this->procedure_name,
+
+            'params'            => $this->parameters
+
+        ];
+
+    }
+
+
+
+    /**
+
+     * @return \Illuminate\Support\Collection
+
+     */
+
+    public function getDataCollection(): \Illuminate\Support\Collection
+
+    {
+
+        return collect($this->data);
+
+    }
+
+    
+
+    /**
+
+     * @return string
+
+     */
+
+    public function __toString()
+
+    {
+
+        return json_encode([
+
+            'stored_procedure'  => $this->procedure_name,
+
+            'parameters'        => $this->parameters,
+
+            'executed'          => $this->executed ? 'true' : 'false',
+
+            'has_error'         => $this->has_error ? 'true' : 'false',
+
+            'error_msg'         => $this->error_msg,
+
+            'error_info'        => $this->error_info,
+
+            'data'              => $this->data
+
+        ]);
+
+    }
+
+}
