@@ -36,7 +36,7 @@ const UsersList = (ListUsersDataProps : UserData ) => {
                     </thead>
                     
                     <tbody>
-                        
+                        {/*
                         {userData.data.map((users, key) => (
                             <tr key={key}>
                                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
@@ -130,6 +130,9 @@ const UsersList = (ListUsersDataProps : UserData ) => {
                                 </td>
                             </tr>
                         ))}
+                            
+                        */}
+
                         <tr className="bg-gray-2 text-left dark:bg-meta-4">
                             <td className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11"></td>
                             <td className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">

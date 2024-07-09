@@ -1,4 +1,4 @@
-'use client'
+ 'use client'
 import React, { useEffect, useState, StrictMode } from 'react'
 import Image from 'next/image'
 import { UserData } from '@/types/UserData'
@@ -43,7 +43,8 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div> */}
-            <UsersList userData={userData} />
+
+            {/* <UsersList userData={userData} /> */}
 
         </div>
     )

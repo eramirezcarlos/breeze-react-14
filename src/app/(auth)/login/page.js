@@ -30,11 +30,10 @@ const Login = () => {
         } else {
             setStatus(null)
         }
-    })
+    }, [router.reset, errors])
 
     const submitForm = async event => {
         event.preventDefault()
-
 
         login({
             email,
@@ -111,7 +110,6 @@ const Login = () => {
                         Forgot your password?
                     </Link>
 
-                    {/* <Button className="ml-3">Login</Button> */}
                     <Button className="ml-3 inline-flex items-center justify-center rounded-full bg-black py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
                         Login
                     </Button>

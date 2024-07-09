@@ -1,9 +1,9 @@
 // 'use client'
 import LoginLinks from '@/app/LoginLinks'
 
-// export const metadata = {
-//     title: 'Laravel',
-// }
+export const metadata = {
+    title: 'Muisca Real Estate',
+}
 
 const Home = () => {
     return (
