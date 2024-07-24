@@ -1,4 +1,3 @@
-
 export const metadata = {
     title: 'Laravel - Dashboard',
 }
@@ -18,4 +17,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-

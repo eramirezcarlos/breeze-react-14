@@ -5,18 +5,17 @@ import React, { useEffect, useState, StrictMode } from 'react'
 import apiService from '@/services/apiServices'
 
 interface ListUsersProps {
-    userData: UserData;
+    userData: UserData
 }
 
-const UsersList = (ListUsersDataProps : UserData ) => {
-//const UsersList: React.FC<ListUsersProps> = () => {
+const UsersList = (ListUsersDataProps: UserData) => {
+    //const UsersList: React.FC<ListUsersProps> = () => {
 
-    console.log("User Data ", ListUsersDataProps );
-   
+    console.log('User Data ', ListUsersDataProps)
+
     return (
         <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="max-w-full overflow-x-auto">
-
                 <table className="w-full table-auto">
                     <thead>
                         <tr className="bg-gray-2 text-left dark:bg-meta-4">
@@ -34,7 +33,7 @@ const UsersList = (ListUsersDataProps : UserData ) => {
                             </th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
                         {/*
                         {userData.data.map((users, key) => (
@@ -142,9 +141,7 @@ const UsersList = (ListUsersDataProps : UserData ) => {
                             <td className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white"></td>
                             <td className="py-4 px-4 font-medium text-black dark:text-white"></td>
                         </tr>
-                    
                     </tbody>
-                
                 </table>
             </div>
         </div>

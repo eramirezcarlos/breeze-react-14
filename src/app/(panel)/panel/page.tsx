@@ -1,19 +1,17 @@
-
-import ECommerce from "@/components/Dashboard/E-commerce";
-import { Metadata } from "next";
+import ECommerce from '@/components/Dashboard/E-commerce'
+import { Metadata } from 'next'
 
 export const metadata = {
-    title: "Real Estate Dashboard",
-    description: "Administration and Maintenance modulefor the Website",  
+    title: 'Real Estate Dashboard',
+    description: 'Administration and Maintenance modulefor the Website',
 }
 
 const Dashboard = () => {
     return (
         <>
-        <ECommerce />
+            <ECommerce />
         </>
     )
 }
 
 export default Dashboard
-        
