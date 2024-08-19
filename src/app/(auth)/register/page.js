@@ -86,9 +86,7 @@ const Page = () => {
 
             {/* Confirm Password */}
             <div className="mt-4">
-                <Label htmlFor="passwordConfirmation">
-                    Confirm Password
-                </Label>
+                <Label htmlFor="passwordConfirmation">Confirm Password</Label>
 
                 <Input
                     id="passwordConfirmation"
@@ -113,10 +111,10 @@ const Page = () => {
                     className="underline text-sm text-gray-600 hover:text-gray-900">
                     Already registered?
                 </Link>
-                    {/* <Button className="ml-4">Register</Button> */}
-                    <Button className="ml-3 inline-flex items-center justify-center rounded-full bg-black py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
-                        Register
-                    </Button>                
+                {/* <Button className="ml-4">Register</Button> */}
+                <Button className="ml-3 inline-flex items-center justify-center rounded-full bg-black py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                    Register
+                </Button>
             </div>
         </form>
     )

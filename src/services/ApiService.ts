@@ -79,6 +79,6 @@ class ApiService {
     // Add more methods for other types of requests (POST, PUT, DELETE, etc.)
 }
 
-const apiService = new ApiService(API_BASE_URL);
+const apiServiceInstance = new ApiService(API_BASE_URL);
 
-export default apiService;
+export default apiServiceInstance;

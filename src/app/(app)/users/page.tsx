@@ -1,39 +1,33 @@
- 'use client'
-import React, { useEffect, useState, StrictMode } from 'react'
-import Image from 'next/image'
-import { UserData } from '@/types/UserData'
-import apiService from '@/services/apiServices'
-import UsersList from '@/components/Tables/UsersList'
+'use client'
 
-interface ListUsersProps {
-    userData: UserData;
+import React, { useEffect, useState } from 'react'
+import ApiService from '@/services/ApiService'
+import UsersList from '@/components/Tables/UsersList'
+import User from '@/types/User'
+import  UserData  from '@/types/UserData'
+
+interface DashboardProps {
+    initialUserData?: User[];
 }
 
-
-
-
-// export const metadata = {
-//     title: 'Laravel - Dashboard',
-// }
-
-const Dashboard = () => {
-
-    const [userData, setUsers] = useState<UserData[]>([])
+const Dashboard: React.FC<DashboardProps> = ({ initialUserData = [] }) => {
+    const [userData, setUserData] = useState<User[]>(initialUserData)
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await apiService.fetchData<UserData[]>('/users')
-                setUsers(data)
-            } catch (error) {
-                console.error('Error fetching users:', error)
-            }
+        // Fetch user data if not provided as props
+        if (initialUserData.length === 0) {
+            const fetchUsers = async () => {
+                try {
+                    const users = await ApiService.getUsers();
+                    setUserData(users);
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                }
+            };
+            fetchUsers();
         }
-    
-        fetchData()
-    }, [])
-    
-    
+    }, [initialUserData]);
+   
     return (
         <div className="py-12">
             {/* <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -43,12 +37,9 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div> */}
-
             {/* <UsersList userData={userData} /> */}
-
         </div>
     )
 }
 
 export default Dashboard
-

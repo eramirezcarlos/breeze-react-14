@@ -14,7 +14,7 @@ import DropdownUser from '@/components/Header/DropdownUser'
 const Navigation = () => {
     const router = useRouter()
 
-    const { logout } = useAuth()
+    const { user, logout } = useAuth()
 
     const [open, setOpen] = useState(false)
 
