@@ -1,17 +1,16 @@
 // 'use client'
-import Image from 'next/image'
-import { UserData } from '@/types/UserData'
-import React, { useEffect, useState, StrictMode } from 'react'
-import apiService from '@/services/apiServices'
+// import Image from 'next/image'
+// import { UserData } from '@/types/UserData'
+// import React, { useEffect, StrictMode } from 'react'
+// import apiService from '@/services/apiServices'
 
-interface ListUsersProps {
-    userData: UserData
-}
+// interface ListUsersProps {
+//     userData: UserData
+// }
 
-const UsersList = (ListUsersDataProps: UserData) => {
-    //const UsersList: React.FC<ListUsersProps> = () => {
-
-    console.log('User Data ', ListUsersDataProps)
+// const UsersList = (ListUsersDataProps: UserData) => {
+const UsersList: React.FC<ListUsersProps> = () => {
+    // console.log('User Data ', ListUsersDataProps)
 
     return (
         <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -133,13 +132,13 @@ const UsersList = (ListUsersDataProps: UserData) => {
                         */}
 
                         <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                            <td className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11"></td>
+                            <td className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11" />
                             <td className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
                                 <a href="#">Page 1</a> &nbsp;
                                 <a href="#">Page 2</a>
                             </td>
-                            <td className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white"></td>
-                            <td className="py-4 px-4 font-medium text-black dark:text-white"></td>
+                            <td className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white" />
+                            <td className="py-4 px-4 font-medium text-black dark:text-white" />
                         </tr>
                     </tbody>
                 </table>

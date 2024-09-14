@@ -12,4 +12,4 @@ interface User {
     created_at: string
     updated_at: string
 }
-export default User;
+export default User

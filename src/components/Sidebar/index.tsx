@@ -12,17 +12,44 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     const pathname = usePathname()
 
-    const trigger = useRef<any>(null)
-    const sidebar = useRef<any>(null)
+    // const trigger = useRef<any>(null)
+    // const sidebar = useRef<any>(null)
 
-    let storedSidebarExpanded = 'true'
+    const trigger = useRef<HTMLDivElement>(null) // Replace with the correct element type
+    const sidebar = useRef<HTMLDivElement>(null) // Replace with the correct element type
+
+    // let storedSidebarExpanded = 'true'
+
+    // const [sidebarExpanded, setSidebarExpanded] = useState(
+    //     storedSidebarExpanded === null
+    //         ? false
+    //         : storedSidebarExpanded === 'true',
+    // )
+    const storedSidebarExpanded = localStorage.getItem('sidebarExpanded')
+
     const [sidebarExpanded, setSidebarExpanded] = useState(
-        storedSidebarExpanded === null
-            ? false
-            : storedSidebarExpanded === 'true',
+        storedSidebarExpanded ? storedSidebarExpanded === 'true' : false,
     )
 
+    useEffect(() => {
+        const clickHandler = ({ target }: MouseEvent) => {
+            if (!sidebar.current || !trigger.current) return
+            if (
+                !sidebarOpen ||
+                sidebar.current.contains(target as Node) ||
+                trigger.current.contains(target as Node)
+            ) {
+                return
+            }
+            setSidebarOpen(false)
+        }
+
+        document.addEventListener('click', clickHandler)
+        return () => document.removeEventListener('click', clickHandler)
+    }, [sidebarOpen, setSidebarOpen])
+
     // close on click outside
+    /*
     useEffect(() => {
         const clickHandler = ({ target }: MouseEvent) => {
             if (!sidebar.current || !trigger.current) return
@@ -37,6 +64,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         document.addEventListener('click', clickHandler)
         return () => document.removeEventListener('click', clickHandler)
     })
+    */
 
     // close if the esc key is pressed
     useEffect(() => {

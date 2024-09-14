@@ -25,12 +25,13 @@ const MapOne = () => {
                             fill: '#FFFB00',
                         },
                     }}
-                    onRegionTipShow={function reginalTip(event, label, code) {
-                        //@ts-ignore
+                    // onRegionTipShow={function reginalTip(event, label, code) {
+                    onRegionTipShow={function reginalTip(event, label) {
+                        //@ts-expect-error lintignore
                         return label.html(`
                   <div style="background-color: #F8FAFC; color: black; padding: 2px 8px"; >
                     ${
-                        //@ts-ignore
+                        //@ts-expect-error lintignore
                         label.html()
                     }
                   </div>`)

@@ -4,7 +4,6 @@ import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
 import UsersList from '@/components/Tables/UsersList'
 import { Metadata } from 'next'
 
-
 // import User from '@/types/User';
 // import { UserData } from '@/types/UserData'
 
@@ -13,15 +12,13 @@ export const metadata: Metadata = {
     description: 'Maintenance users ',
 }
 
-
 const UsersLayout = () => {
-
     return (
         <>
             <Breadcrumb pageName="Users" />
 
             <div className="flex flex-col gap-10">
-                <UsersList  />
+                <UsersList />
             </div>
 
             {/*Start layout for the modal */}
