@@ -78,7 +78,8 @@ const ChatCard = () => {
                                     chat.dot === 6
                                         ? 'bg-meta-6'
                                         : `bg-meta-${chat.dot}`
-                                } `}></span>
+                                } `}
+                            />
                         </div>
 
                         <div className="flex flex-1 items-center justify-between">
