@@ -152,7 +152,7 @@ const ChartOne: React.FC = () => {
         }))
     }
 
-    handleReset
+    handleReset()
 
     // NextJS Requirement
     const isWindowAvailable = () => typeof window !== 'undefined'
@@ -165,7 +165,7 @@ const ChartOne: React.FC = () => {
                 <div className="flex w-full flex-wrap gap-3 sm:gap-5">
                     <div className="flex min-w-47.5">
                         <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-primary">
-                            <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
+                            <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary" />
                         </span>
                         <div className="w-full">
                             <p className="font-semibold text-primary">
@@ -178,7 +178,7 @@ const ChartOne: React.FC = () => {
                     </div>
                     <div className="flex min-w-47.5">
                         <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-secondary">
-                            <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
+                            <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary" />
                         </span>
                         <div className="w-full">
                             <p className="font-semibold text-secondary">

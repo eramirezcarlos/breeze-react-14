@@ -28,7 +28,7 @@ const ChartFour: React.FC = () => {
             // Update the desired properties
         }))
     }
-    updateState
+    updateState()
 
     const options: ApexOptions = {
         colors: ['#3C50E0'],
